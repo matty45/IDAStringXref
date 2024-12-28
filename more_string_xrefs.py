@@ -1,7 +1,14 @@
 # Simple script by monkeyman192 to find lots of strings which don't have xrefs
 # in IDA and add them.
 
+import idaapi
 from ida_xref import XREF_USER, dr_O
+import ida_bytes
+
+if idaapi.IDA_SDK_VERSION >= 900:
+    IS_9X = True
+else:
+    IS_9X = False
 
 BASE = 0x140000000
 RDATA = ida_segment.get_segm_by_name(".rdata")
@@ -76,13 +83,22 @@ def get_binary_results(search_str: str):
     curr = start - 1
     addrs = []
     while curr < end:
-        addr = ida_search.find_binary(
-            curr + 1,
-            end,
-            search_str,
-            16,
-            idc.SEARCH_NEXT | idc.SEARCH_DOWN
-        )
+        if IS_9X:
+            addr = ida_bytes.find_bytes(
+                search_str,
+                curr + 1,
+                None,
+                end,
+                None,
+            )
+        else:
+            addr = ida_search.find_binary(
+                curr + 1,
+                end,
+                search_str,
+                16,
+                idc.SEARCH_NEXT | idc.SEARCH_DOWN
+            )
         if addr == 0xFFFFFFFFFFFFFFFF:
             return addrs
         else:
