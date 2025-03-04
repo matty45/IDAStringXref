@@ -8,6 +8,10 @@ matched = []
 with open(op.join(CWD, "output", "matched.txt"), "r") as f:
     for line in f:
         _split = line.strip().split()
+        try:
+            print(_split[1])
+        except IndexError:
+            continue
         if _split[0].startswith("sub_") and not _split[1].startswith("sub_"):
             addr = _split[0][4:]
             matched.append((int(addr, 16), _split[1]))

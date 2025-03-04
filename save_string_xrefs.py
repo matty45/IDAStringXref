@@ -46,7 +46,10 @@ string_info = ida_strlist.string_info_t()
 for i in range(string_count):
     ida_strlist.get_strlist_item(string_info, i)
     ea = string_info.ea
-    str_val = idc.get_strlit_contents(ea).decode()
+    str_contents = idc.get_strlit_contents(ea)
+    if str_contents is None:
+        continue
+    str_val = str_contents.decode()
     xrefs = list(idautils.XrefsTo(ea, 0))
     string_refcounts[str_val] = len(xrefs)
     for xref in xrefs:
